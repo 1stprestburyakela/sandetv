@@ -1,0 +1,168 @@
+#Edit file /boot/config.txt Enabled Overscan disable. HDMI mode 1, Group 4 (720p)
+#disable overscan
+(sudo nano /boot/config.txt)
+
+#######################################
+
+#On the Raspberry Pi you need to install samba and winbind
+sudo apt-get install samba
+sudo apt-get install winbind
+
+#Edit /etc/nsswitch.conf to enable wins:
+sudo nano /etc/nsswitch.conf
+#change 'hosts: files dns' TO 'hosts: files wins dns'
+
+#To change the hostname
+sudo nano /etc/hostname
+
+##########################################
+
+#Keep screen active
+sudo nano /etc/lightdm/lightdm.conf
+#Anywhere below the [SeatDefaults] header, add:
+xserver-command=X -s 0 -dpms
+#or possibly by installing xscreensaver then disabling it?
+
+# Ignore this? sudo apt-get install motion
+
+sudo apt-get install unclutter
+sudo nano /etc/xdg/lxsession/LXDE/autostart
+# add this line:
+# @unclutter -idle 0.1 -root
+
+
+#############################################
+
+#VNC connections:
+sudo apt-get install realvnc-vnc-server realvnc-vnc-viewer
+
+sudo raspi-config
+#Set memory split for video to 128
+#Allow VNC connections
+#When VNC server starts, ensure idle clients are not disconnected (settings)
+#Swap authentication to VNC password
+
+
+
+#From desktop start vncviewer
+#In options, set:
+#FullScreen
+#HideCloseAlert
+#DotWhenNoCursor (false)
+#UseLocalCursor (false)
+
+#############################################
+
+# Start things on boot
+
+#Create in
+#/home/pi/.config/autostart/... 
+
+#File name: vnc.desktop
+# Contents:
+
+#[Desktop Entry]
+#Encoding=UTF-8
+#Type=Application
+#Name=X11VNC
+#Comment=
+#Exec=vncviewer -listen 
+#StartupNotify=false
+#Terminal=false
+#Hidden=false
+
+
+# (On Windows Use TightVNC to connect. Server can set listen only mode etc)
+
+# File name sande.desktop
+# Contents:
+
+#[Desktop Entry]
+#Encoding=UTF-8
+#Type=Application
+#Name=Python
+#Comment=
+#Exec=/home/pi/bootstrap.py
+#StartupNotify=false
+#Terminal=true
+#Hidden=false
+
+
+#Make sure bootstrap.py and boot.py are executable
+sudo chmod +x /home/pi/boot.py
+sudo chmod +x /home/pi/sande/bootstrap.py
+#######################################
+
+# You may need to isntall chromium if your pi doesn't already have it
+# The latest S+E software also uses Kodi for basic images display
+sudo apt-get install kodi
+
+##########################################
+The rest is all devy stuff at the moment
+##########################################
+Kodi - Settings -> Player-> Pictures tweak as needed
+Settings -> Interface ->Screensaver
+
+
+Kodi settings are in /home/pi/.kodi/userdata
+
+###############################
+
+
+python websockets
+sudo pip install git+https://github.com/dpallot/simple-websocket-server.git
+
+
+Kodi sources.xml ?
+
+<sources>
+    <programs>
+        <default pathversion="1"></default>
+    </programs>
+    <video>
+        <default pathversion="1"></default>
+    </video>
+    <music>
+        <default pathversion="1"></default>
+    </music>
+    <pictures>
+        <default pathversion="1"></default>
+        <source>
+            <name>Images</name>
+            <path pathversion="1">/home/pi/sande/Images/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+    </pictures>
+    <files>
+        <default pathversion="1"></default>
+        <source>
+            <name>Images</name>
+            <path pathversion="1">/home/pi/sande/Images/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+    </files>
+</sources>
+
+
+
+CAMERA bit
+
+wget http://www.linux-projects.org/listing/uv4l_repo/lrkey.asc && sudo apt-key add ./lrkey.asc  
+echo "deb http://www.linux-projects.org/listing/uv4l_repo/raspbian/ jessie main" | sudo tee -a /etc/apt/sources.list  
+sudo apt-get update  
+sudo apt-get install uv4l uv4l-raspicam uv4l-raspicam-extras uv4l-server uv4l-uvc uv4l-xscreen uv4l-mjpegstream  
+sodu reboot  
+http://www.home-automation-community.com/surveillance-with-raspberry-pi-noir-camera-howto/
+
+DNS bit
+
+address=/com/192.168.0.2
+server=/cnn.com/8.8.8.8
+pi@raspberrypikitchen:/etc/dnsmasq.d $ sudo nano 03-pihole-wildcard.conf
+just to remind me ??
+thats how we blacklist all .com
+and then whitelist specfic domains
+
+SSL
+
+https://github.com/srvrco/getssl

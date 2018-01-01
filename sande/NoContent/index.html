@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html style="cursor:none;font-size: 20px;color:white;font-family: Consolas, monaco, monospace;">
+
+<head>
+ 
+</head>
+
+<body bgcolor="#000000" style="cursor:none;">
+
+<script>
+var version;
+var xhttp=new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+  if (xhttp.readyState == 4 && xhttp.status == 200) {
+     version = xhttp.responseText;;
+  }
+  
+};
+xhttp.open("GET", "version.txt?t="+Date(), true);
+xhttp.send();
+
+var visible = true
+
+var blink = function(){
+document.getElementById("blink").style.visibility = (visible?"hidden":"visible");
+visible = !visible;
+}
+
+var reload = function(){
+        document.body.style.cursor = 'default';
+        document.body.style.cursor = 'none';
+
+        var xhttp=new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+             if (version != xhttp.responseText)
+                {
+                    window.location.reload();
+                }
+			}
+          
+        };
+        xhttp.open("GET", "version.txt?t="+Date(), true);
+        xhttp.send();
+}
+
+var getip = function(){
+    
+    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;   //compatibility for firefox and chrome
+    var pc = new RTCPeerConnection({iceServers:[]}), noop = function(){};      
+    pc.createDataChannel("");    //create a bogus data channel
+    pc.createOffer(pc.setLocalDescription.bind(pc), noop);    // create offer and set local description
+    pc.onicecandidate = function(ice){  //listen for candidate events
+        try{
+        if(!ice || !ice.candidate || !ice.candidate.candidate)  return;
+        //var myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1];
+        ip = ice.candidate.candidate.split(" ")[4]
+        document.getElementById("ipaddress").innerHTML += ip + "<br/>"
+        console.log('my IP: ', ip);   }
+        //pc.onicecandidate = noop;
+        catch(e){}
+    };
+}
+getip();
+setInterval(blink,800);
+setInterval(reload, 15000);
+setInterval(function(){document.getElementById("ipaddress").innerHTML=""},15000);
+</script>
+
+<span id="ipaddress"></span>
+System Ready <span id="blink"; style="color:#00BB00;">&#x25AE;</span>
+</body>
+
+</html>
